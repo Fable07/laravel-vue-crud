@@ -32,20 +32,74 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 
 - PHP 8.2+
 - Composer
-- Node.js + npm
+- Node.js 20+ and npm
+- MySQL (XAMPP, Laragon, or standalone)
+- Gmail account with App Password (for OTP emails)
 
-## Installation
+## Local Setup
+
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/Fable07/laravel-vue-crud.git
 cd laravel-vue-crud
 composer install
 npm install
+```
+
+### 2. Configure environment
+
+```bash
 cp .env.example .env
 php artisan key:generate
-
-
-npm run dev - for vue
-php artisan serve - for laravel
 ```
+
+Edit `.env` with your database and mail settings:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_vue_crud
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_SCHEME=
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_gmail_app_password
+MAIL_FROM_ADDRESS=your_email@gmail.com
+MAIL_FROM_NAME="Laravel Vue CRUD"
+```
+
+> **Gmail App Password:** Go to Google Account → Security → 2-Step Verification → App Passwords → Generate one and paste it as `MAIL_PASSWORD`.
+
+### 3. Create database
+
+```sql
+CREATE DATABASE laravel_vue_crud CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 4. Run migrations and link storage
+
+```bash
+php artisan migrate
+php artisan storage:link
+```
+
+### 5. Start dev servers
+
+Open **two terminals**:
+
+```bash
+# Terminal 1 — Frontend
+npm run dev
+
+# Terminal 2 — Backend
+php artisan serve
+```
+
+Visit **http://localhost:8000**
 
