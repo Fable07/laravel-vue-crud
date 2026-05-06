@@ -139,3 +139,36 @@ This project is configured for one-click deployment on [Railway](https://railway
 5. Railway will build using the [Dockerfile](Dockerfile) and auto-deploy on every push to `main`
 6. Migrations run automatically on container startup (`php artisan migrate --force`)
 
+## Known Limitations
+
+| Limitation | Impact |
+|---|---|
+| **Uploaded images are lost on Railway redeploy** | Railway uses an ephemeral filesystem — all uploaded images are wiped on every new deployment. Requires S3 or Cloudinary for persistent image storage. |
+| **OTP stored as plaintext** | OTP codes are saved as plain text in the database. Low risk since they expire quickly, but hashing them before saving would be more secure. |
+| **`php artisan serve` used in production** | The built-in PHP server is single-threaded and not suitable for production traffic. Acceptable for demo purposes only. |
+| **Demo/portfolio use only** | The project is stable and fully functional, but not production-ready for real-world use with many concurrent users. |
+
+## Security
+
+### What's Already Secured
+
+| What | How |
+|---|---|
+| **SQL Injection** | Laravel Eloquent ORM used throughout — no raw queries |
+| **CSRF** | Laravel's CSRF protection enabled by default; Inertia handles it automatically |
+| **XSS** | Vue 3 escapes output by default; no `v-html` with user input |
+| **Authentication** | Laravel Breeze handles secure login, bcrypt password hashing, and signed password reset URLs |
+| **Authorization** | All product routes filter by `user_id = auth()->id()` — users cannot access each other's data |
+| **OTP Rate Limiting** | Max 3 OTP sends per minute per user via Laravel `RateLimiter` |
+| **OTP Expiry & Invalidation** | OTPs expire in 10 minutes and are marked `used` after verification or on next send |
+| **File Upload Validation** | Image uploads restricted to `jpg, jpeg, png, webp`, max 2MB |
+| **HTTPS Enforced** | `URL::forceScheme('https')` and `trustProxies` configured for Railway |
+
+### Known Security Gaps
+
+| Issue | Risk | Recommended Fix |
+|---|---|---|
+| **OTP stored as plaintext** | Low — OTPs are exposed if the database is breached (though they expire quickly) | Hash with `hash('sha256', $code)` before saving and compare hashed input on verify |
+| **No rate limit on OTP verify** | Medium — attacker can brute-force a 6-digit code without lockout | Add `RateLimiter` on the verify endpoint |
+| **Session-based OTP state** | Low — `otp_verified` in session; hijacked session bypasses 2FA | Acceptable at this scale; a per-session DB flag would be more robust |
+
