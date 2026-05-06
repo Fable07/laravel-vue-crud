@@ -19,6 +19,7 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 - [x] Tailwind CSS and PostCSS configured
 - [x] jsconfig paths, aliases, and editor settings configured
 - [x] Users and sessions migration added
+- [x] Cache and jobs migration added
 
 ## Requirements
 
