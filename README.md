@@ -22,6 +22,7 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 - [x] Cache and jobs migration added
 - [x] Products migration with soft deletes added
 - [x] OTPs migration added
+- [x] User, Product, and Otp models added
 
 ## Requirements
 
@@ -43,3 +44,4 @@ php artisan key:generate
 npm run dev - for vue
 php artisan serve - for laravel
 ```
+
