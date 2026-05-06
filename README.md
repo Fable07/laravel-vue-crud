@@ -24,6 +24,8 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 - [x] OTPs migration added
 - [x] User, Product, and Otp models added
 - [x] Database factories and seeders added
+- [x] Authentication — Register, Login, Logout, Password Reset, Email Verification, Confirm Password
+- [x] OTP two-factor authentication — send/verify via email, rate limiting, session guard
 
 ## Requirements
 
