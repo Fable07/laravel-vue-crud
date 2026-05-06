@@ -1,5 +1,7 @@
 [build]
 builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+cache = true
 
 [deploy]
 healthcheckPath = "/"

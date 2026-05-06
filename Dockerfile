@@ -14,11 +14,13 @@ WORKDIR /app
 
 # Copy composer files first for layer caching
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN --mount=type=cache,target=/root/.composer \
+    composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copy package files and install
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # Copy rest of application
 COPY . .
