@@ -23,6 +23,7 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 - [x] Products migration with soft deletes added
 - [x] OTPs migration added
 - [x] User, Product, and Otp models added
+- [x] Database factories and seeders added
 
 ## Requirements
 
