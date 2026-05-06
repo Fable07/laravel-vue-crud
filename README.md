@@ -16,8 +16,7 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 ## Progress
 
 - Laravel 12 + Vue 3 + Inertia.js + Vite project initialized
-- Tailwind CSS and PostCSS configured
-
+- Tailwind CSS and PostCSS configured- jsconfig paths, aliases, and editor settings configured
 ## Requirements
 
 - PHP 8.2+
