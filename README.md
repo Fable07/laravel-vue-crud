@@ -20,6 +20,7 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 - [x] jsconfig paths, aliases, and editor settings configured
 - [x] Users and sessions migration added
 - [x] Cache and jobs migration added
+- [x] Products migration with soft deletes added
 
 ## Requirements
 
@@ -36,4 +37,8 @@ composer install
 npm install
 cp .env.example .env
 php artisan key:generate
+
+
+npm run dev - for vue
+php artisan serve - for laravel
 ```
