@@ -11,13 +11,9 @@ nixPkgs = [
   "php82Extensions.bcmath",
   "php82Extensions.tokenizer",
   "php82Extensions.fileinfo",
+  "php82Packages.composer",
   "nodejs_20",
   "nodePackages.npm"
-]
-cmds = [
-  "curl -sS https://getcomposer.org/installer | php",
-  "mv composer.phar /usr/local/bin/composer",
-  "chmod +x /usr/local/bin/composer"
 ]
 
 [phases.install]

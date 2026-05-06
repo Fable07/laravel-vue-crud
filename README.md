@@ -2,7 +2,7 @@
 
 A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + Inertia.js** (frontend).
 
-> This project is being built incrementally. More features will be added with each commit.
+> Live demo: [laravel-vue-crud-production.up.railway.app](https://laravel-vue-crud-production.up.railway.app)
 
 ## Tech Stack
 
@@ -12,6 +12,8 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 | Frontend | Vue 3, Inertia.js |
 | Build Tool | Vite |
 | CSS | Tailwind CSS + custom plain CSS |
+| Deployment | Railway (Docker) |
+| Database | MySQL (Railway managed) |
 
 ## Progress
 
@@ -102,4 +104,38 @@ php artisan serve
 ```
 
 Visit **http://localhost:8000**
+
+## Railway Deployment
+
+This project is configured for one-click deployment on [Railway](https://railway.app) using Docker.
+
+### Steps
+
+1. Fork or push this repo to GitHub
+2. In Railway → **New Project** → **Deploy from GitHub repo**
+3. Add a **MySQL** database service to the project
+4. Set the following environment variables on the app service:
+
+| Variable | Value |
+|---|---|
+| `APP_KEY` | Output of `php artisan key:generate --show` |
+| `APP_ENV` | `production` |
+| `APP_DEBUG` | `false` |
+| `APP_URL` | Your Railway public domain (with `https://`) |
+| `DB_CONNECTION` | `mysql` |
+| `DB_HOST` | `${{MySQL.MYSQL_HOST}}` |
+| `DB_PORT` | `${{MySQL.MYSQL_PORT}}` |
+| `DB_DATABASE` | `${{MySQL.MYSQL_DATABASE}}` |
+| `DB_USERNAME` | `${{MySQL.MYSQL_USER}}` |
+| `DB_PASSWORD` | `${{MySQL.MYSQL_PASSWORD}}` |
+| `MAIL_MAILER` | `smtp` |
+| `MAIL_HOST` | `smtp.gmail.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_USERNAME` | your Gmail address |
+| `MAIL_PASSWORD` | your Gmail App Password |
+| `MAIL_FROM_ADDRESS` | your Gmail address |
+| `MAIL_FROM_NAME` | `Laravel Vue CRUD` |
+
+5. Railway will build using the [Dockerfile](Dockerfile) and auto-deploy on every push to `main`
+6. Migrations run automatically on container startup (`php artisan migrate --force`)
 
