@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\OtpMail;
 use App\Models\Otp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
@@ -23,7 +24,7 @@ class OtpController extends Controller
 
     public function send(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         $key = 'otp-send:' . $user->id;
         if (RateLimiter::tooManyAttempts($key, 3)) {
@@ -39,14 +40,21 @@ class OtpController extends Controller
 
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        $otp = Otp::create([
+        Otp::create([
             'user_id'    => $user->id,
             'code'       => $code,
             'expires_at' => now()->addMinutes(10),
             'used'       => false,
         ]);
 
-        Mail::to($user->email)->send(new OtpMail($code));
+        try {
+            Mail::to($user->email)->send(new OtpMail($code));
+        } catch (\Exception $e) {
+            Log::error('OTP mail failed: ' . $e->getMessage());
+            throw ValidationException::withMessages([
+                'code' => 'Failed to send OTP email. Please check mail configuration.',
+            ]);
+        }
 
         return back()->with('status', 'OTP sent to your email.');
     }
@@ -57,10 +65,10 @@ class OtpController extends Controller
             'code' => 'required|string|size:6',
         ]);
 
-        $user = auth()->user();
+        $user = $request->user();
 
         $otp = Otp::where('user_id', $user->id)
-            ->where('code', $request->code)
+            ->where('code', $request->input('code'))
             ->where('used', false)
             ->where('expires_at', '>', now())
             ->latest()
