@@ -49,5 +49,5 @@ CMD ["sh", "-c", \
     && php artisan view:cache \
     && envsubst '${PORT}' < /etc/nginx/nginx-app.conf.template > /etc/nginx/sites-available/default \
     && php-fpm -D \
-    && php artisan queue:work --daemon --sleep=3 --tries=3 --timeout=60 \
-    & nginx -g 'daemon off;'"]
+    && (php artisan queue:work --sleep=3 --tries=3 --timeout=60 &) \
+    && nginx -g 'daemon off;'"]
