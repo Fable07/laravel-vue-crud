@@ -51,7 +51,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Auto-send OTP after registration
-        Otp::where('user_id', $user->id)->update(['used' => true]);
+        Otp::query()->where('user_id', $user->id)->update(['used' => true]);
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Otp::create([
             'user_id'    => $user->id,

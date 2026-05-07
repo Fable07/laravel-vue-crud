@@ -36,7 +36,7 @@ class OtpController extends Controller
         RateLimiter::hit($key, 60);
 
         // Invalidate previous OTPs
-        Otp::where('user_id', $user->id)->update(['used' => true]);
+        Otp::query()->where('user_id', $user->id)->update(['used' => true]);
 
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
@@ -60,7 +60,7 @@ class OtpController extends Controller
 
         $user = $request->user();
 
-        $otp = Otp::where('user_id', $user->id)
+        $otp = Otp::query()->where('user_id', $user->id)
             ->where('code', $request->input('code'))
             ->where('used', false)
             ->where('expires_at', '>', now())
