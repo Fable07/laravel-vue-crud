@@ -11,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -60,11 +59,7 @@ class RegisteredUserController extends Controller
             'expires_at' => now()->addMinutes(10),
             'used'       => false,
         ]);
-        try {
-            Mail::to($user->email)->send(new OtpMail($code));
-        } catch (\Exception $e) {
-            Log::error('OTP mail failed on register: ' . $e->getMessage());
-        }
+        Mail::to($user->email)->queue(new OtpMail($code));
 
         return redirect()->route('otp.show')->with('status', 'OTP sent to your email.');
     }

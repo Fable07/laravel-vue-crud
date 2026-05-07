@@ -47,14 +47,7 @@ class OtpController extends Controller
             'used'       => false,
         ]);
 
-        try {
-            Mail::to($user->email)->send(new OtpMail($code));
-        } catch (\Exception $e) {
-            Log::error('OTP mail failed: ' . $e->getMessage());
-            throw ValidationException::withMessages([
-                'code' => 'Failed to send OTP email. Please check mail configuration.',
-            ]);
-        }
+        Mail::to($user->email)->queue(new OtpMail($code));
 
         return back()->with('status', 'OTP sent to your email.');
     }
