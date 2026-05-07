@@ -8,6 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::dropIfExists('otps');
+    }
+
+    public function down(): void
+    {
         Schema::create('otps', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -16,10 +21,5 @@ return new class extends Migration
             $table->boolean('used')->default(false);
             $table->timestamps();
         });
-    }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('otps');
     }
 };

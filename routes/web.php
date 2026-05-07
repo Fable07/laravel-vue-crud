@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\OtpController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Middleware\EnsureOtpVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,15 +15,8 @@ Route::get('/', function () {
     ]);
 });
 
-// OTP routes (auth required but NOT otp-verified)
+// Protected routes
 Route::middleware('auth')->group(function () {
-    Route::get('/otp/verify', [OtpController::class, 'show'])->name('otp.show');
-    Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send');
-    Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
-});
-
-// Protected routes (auth + OTP verified)
-Route::middleware(['auth', EnsureOtpVerified::class])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');

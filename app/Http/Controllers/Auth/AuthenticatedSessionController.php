@@ -32,9 +32,8 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        $request->session()->forget('otp_verified');
 
-        return redirect()->route('otp.show');
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**

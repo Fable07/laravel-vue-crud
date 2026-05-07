@@ -76,8 +76,8 @@ defineProps({
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h3 class="welcome-feature-title">Secure Auth + OTP</h3>
-                    <p class="welcome-feature-desc">Register, login, and verify with a 6-digit email OTP for two-factor security.</p>
+                    <h3 class="welcome-feature-title">Secure Auth</h3>
+                    <p class="welcome-feature-desc">Register and log in with Laravel's built-in authentication.</p>
                 </div>
                 <div class="welcome-feature-card">
                     <div class="welcome-feature-icon">
