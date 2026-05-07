@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OtpMail;
+use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -33,7 +37,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -47,6 +51,21 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Auto-send OTP after registration
+        Otp::where('user_id', $user->id)->update(['used' => true]);
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        Otp::create([
+            'user_id'    => $user->id,
+            'code'       => $code,
+            'expires_at' => now()->addMinutes(10),
+            'used'       => false,
+        ]);
+        try {
+            Mail::to($user->email)->send(new OtpMail($code));
+        } catch (\Exception $e) {
+            Log::error('OTP mail failed on register: ' . $e->getMessage());
+        }
+
+        return redirect()->route('otp.show')->with('status', 'OTP sent to your email.');
     }
 }

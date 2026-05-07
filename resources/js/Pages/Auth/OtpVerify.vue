@@ -1,5 +1,6 @@
 <script setup>
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, router } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -17,6 +18,13 @@ function sendOtp() {
 function verify() {
     verifyForm.post(route('otp.verify'));
 }
+
+// Auto-send OTP when arriving from login (no flash status means no OTP was sent yet)
+onMounted(() => {
+    if (!page.props.flash?.status) {
+        sendOtp();
+    }
+});
 </script>
 
 <template>
