@@ -178,6 +178,27 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()
             ->where('user_id', Auth::id())
             ->findOrFail($id);
+
+        if ($product->status === 'active') {
+            $conflict = Product::where('user_id', Auth::id())
+                ->where('name', $product->name)
+                ->where('status', 'active')
+                ->whereNull('deleted_at')
+                ->when(
+                    $product->category !== null,
+                    fn($q) => $q->where('category', $product->category),
+                    fn($q) => $q->whereNull('category')
+                )
+                ->exists();
+
+            if ($conflict) {
+                $category = $product->category ?? 'uncategorized';
+                return redirect()
+                    ->back()
+                    ->with('error', "Cannot restore: An active product named '{$product->name}' already exists in the '{$category}' category. Please rename the existing product first.");
+            }
+        }
+
         $product->restore();
 
         return redirect()->route('products.index', ['trashed' => 'only'])

@@ -132,7 +132,7 @@ function restoreProduct(id) {
                                 </td>
 
                                 <td class="td-right">
-                                    <span class="price-text">${{ Number(product.price).toFixed(2) }}</span>
+                                    <span class="price-text">₱{{ Number(product.price).toFixed(2) }}</span>
                                 </td>
 
                                 <td class="td-right">

@@ -64,7 +64,7 @@ function submit() {
 
                     <div class="form-row-2">
                         <div class="form-group">
-                            <InputLabel for="price" value="Price (USD) *" />
+                            <InputLabel for="price" value="Price (PHP) *" />
                             <TextInput id="price" v-model="form.price" type="number" step="0.01" min="0" required />
                             <InputError :message="form.errors.price" />
                         </div>

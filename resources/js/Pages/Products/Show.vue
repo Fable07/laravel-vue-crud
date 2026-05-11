@@ -53,7 +53,7 @@ function softDelete() {
                         <div class="product-stats-grid">
                             <div class="stat-block">
                                 <dt class="stat-label">Price</dt>
-                                <dd class="stat-value">${{ Number(product.price).toFixed(2) }}</dd>
+                                <dd class="stat-value">₱{{ Number(product.price).toFixed(2) }}</dd>
                             </div>
                             <div class="stat-block">
                                 <dt class="stat-label">In Stock</dt>
