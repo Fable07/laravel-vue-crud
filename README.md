@@ -1,6 +1,6 @@
 # Laravel Vue CRUD — Product Inventory
 
-A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + Inertia.js** (frontend).
+A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + Inertia.js** (frontend), deployed on Railway via Docker.
 
 > Live demo: [laravel-vue-crud-production.up.railway.app](https://laravel-vue-crud-production.up.railway.app)
 
@@ -15,18 +15,13 @@ A full-stack web application built with **Laravel 12** (backend) and **Vue 3 + I
 | Deployment | Railway (Docker) |
 | Database | MySQL (Railway managed) |
 
-## Progress
+## Features
 
-- [x] Laravel 12 + Vue 3 + Inertia.js + Vite project initialized
-- [x] Tailwind CSS and PostCSS configured
-- [x] jsconfig paths, aliases, and editor settings configured
-- [x] Users and sessions migration added
-- [x] Cache and jobs migration added
-- [x] Products migration with soft deletes added
-- [x] User and Product models added
-- [x] Database factories and seeders added
-- [x] Authentication — Register, Login, Logout, Password Reset, Email Verification, Confirm Password
-- [x] Products CRUD — Create, Read, Update, Delete, Soft Delete, Restore, Force Delete, image upload
+- **Authentication** — Register, Login, Logout, Password Reset, Email Verification, Confirm Password (Laravel Breeze)
+- **Product Management** — Create, Read, Update, Delete with image upload and category tagging
+- **Soft Deletes** — Move products to trash, restore, or permanently delete
+- **Per-user Data Isolation** — users can only see and manage their own products
+- **Profile Management** — update name, email, and password; delete account
 
 ## Requirements
 
@@ -142,7 +137,6 @@ This project is configured for one-click deployment on [Railway](https://railway
 | Limitation | Impact |
 |---|---|
 | **Uploaded images are lost on Railway redeploy** | Railway uses an ephemeral filesystem — all uploaded images are wiped on every new deployment. Requires S3 or Cloudinary for persistent image storage. |
-| **`php artisan serve` used in production** | The built-in PHP server is single-threaded and not suitable for production traffic. Acceptable for demo purposes only. |
 | **Demo/portfolio use only** | The project is stable and fully functional, but not production-ready for real-world use with many concurrent users. |
 
 ## Security
@@ -163,5 +157,6 @@ This project is configured for one-click deployment on [Railway](https://railway
 
 | Issue | Risk | Recommended Fix |
 |---|---|---|
-
+| **Images served from local storage** | Medium — uploaded files are publicly accessible by URL with no auth check | Move image storage to S3/Cloudinary with signed URLs |
+| **No brute-force protection on login** | Medium — repeated login attempts are not throttled beyond Laravel's default | Add `RateLimiter` or enable `throttle:login` on the login route |
 

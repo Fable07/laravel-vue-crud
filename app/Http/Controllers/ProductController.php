@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('user_id', auth()->id());
+        $query = Product::where('user_id', Auth::id());
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -43,12 +45,32 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $userId   = Auth::id();
+        $category = $request->input('category') ?: null;
+        $status   = $request->input('status', 'active');
+
+        $nameRules = ['required', 'string', 'max:255'];
+        if ($status === 'active') {
+            $nameRules[] = Rule::unique('products', 'name')
+                ->where(function ($query) use ($userId, $category) {
+                    $query->where('user_id', $userId)
+                        ->where('status', 'active')
+                        ->whereNull('deleted_at');
+                    if ($category !== null) {
+                        $query->where('category', $category);
+                    } else {
+                        $query->whereNull('category');
+                    }
+                });
+        }
+
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name'        => $nameRules,
             'description' => 'nullable|string|max:1000',
             'price'       => 'required|numeric|min:0',
             'quantity'    => 'required|integer|min:0',
             'category'    => 'nullable|string|max:100',
+            'status'      => 'nullable|in:active,inactive',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -57,12 +79,13 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        auth()->user()->products()->create([
+        Auth::user()->products()->create([
             'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'price'       => $validated['price'],
             'quantity'    => $validated['quantity'],
             'category'    => $validated['category'] ?? null,
+            'status'      => $validated['status'] ?? 'active',
             'image_path'  => $imagePath,
         ]);
 
@@ -73,7 +96,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = Product::withTrashed()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->findOrFail($id);
 
         return Inertia::render('Products/Show', ['product' => $product]);
@@ -81,21 +104,42 @@ class ProductController extends Controller
 
     public function edit(string $id)
     {
-        $product = Product::where('user_id', auth()->id())->findOrFail($id);
+        $product = Product::where('user_id', Auth::id())->findOrFail($id);
 
         return Inertia::render('Products/Edit', ['product' => $product]);
     }
 
     public function update(Request $request, string $id)
     {
-        $product = Product::where('user_id', auth()->id())->findOrFail($id);
+        $product = Product::where('user_id', Auth::id())->findOrFail($id);
+
+        $userId   = Auth::id();
+        $category = $request->input('category') ?: null;
+        $status   = $request->input('status', $product->status);
+
+        $nameRules = ['required', 'string', 'max:255'];
+        if ($status === 'active') {
+            $nameRules[] = Rule::unique('products', 'name')
+                ->where(function ($query) use ($userId, $category) {
+                    $query->where('user_id', $userId)
+                        ->where('status', 'active')
+                        ->whereNull('deleted_at');
+                    if ($category !== null) {
+                        $query->where('category', $category);
+                    } else {
+                        $query->whereNull('category');
+                    }
+                })
+                ->ignore($product->id);
+        }
 
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name'        => $nameRules,
             'description' => 'nullable|string|max:1000',
             'price'       => 'required|numeric|min:0',
             'quantity'    => 'required|integer|min:0',
             'category'    => 'nullable|string|max:100',
+            'status'      => 'nullable|in:active,inactive',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -112,6 +156,7 @@ class ProductController extends Controller
             'price'       => $validated['price'],
             'quantity'    => $validated['quantity'],
             'category'    => $validated['category'] ?? null,
+            'status'      => $validated['status'] ?? $product->status,
             'image_path'  => $validated['image_path'] ?? $product->image_path,
         ]);
 
@@ -121,7 +166,7 @@ class ProductController extends Controller
 
     public function destroy(string $id)
     {
-        $product = Product::where('user_id', auth()->id())->findOrFail($id);
+        $product = Product::where('user_id', Auth::id())->findOrFail($id);
         $product->delete();
 
         return redirect()->route('products.index')
@@ -131,7 +176,7 @@ class ProductController extends Controller
     public function restore(string $id)
     {
         $product = Product::onlyTrashed()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->findOrFail($id);
         $product->restore();
 
@@ -142,7 +187,7 @@ class ProductController extends Controller
     public function forceDelete(string $id)
     {
         $product = Product::onlyTrashed()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->findOrFail($id);
 
         if ($product->image_path) {
